@@ -53,6 +53,17 @@ dependencies:
   uuid: ^4.4.0
   mime: ^1.0.6
 
+  # HTTP server and client
+  shelf: ^1.4.1
+  shelf_router: ^1.1.4
+  http: ^1.2.1
+
+  # mDNS
+  bonsoir: ^6.0.0
+
+  # Preferences
+  shared_preferences: ^2.2.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
