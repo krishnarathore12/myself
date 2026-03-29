@@ -1,0 +1,11 @@
+app_name: "localchat"
+display_name: "Local Chat"
+package_name: "localchat"
+executable_name: "myself"
+summary: "Local WiFi Chat application."
+description: "A peer-to-peer chat application built with Flutter."
+maintainer:
+  name: "Krishna"
+  email: "krishna@ubuntu.local"
+categories:
+  - "Network"`
