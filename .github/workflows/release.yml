@@ -59,7 +59,7 @@ jobs:
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows --release
       - run: |
-          Compress-Archive -Path build\windows\x64\release\* -DestinationPath myself-windows.zip
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath myself-windows.zip
       - uses: actions/upload-artifact@v4
         with:
           name: windows-release

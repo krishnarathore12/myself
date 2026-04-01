@@ -5,11 +5,10 @@ ENV['COCOAPODS_DISABLE_STATS'] = '1'
 
 project 'Runner', {
   'Debug' => :debug,
-  'Release' => :release,
   'Profile' => :profile,
+  'Release' => :release,
 }
 
-# This is the boilerplate that Flutter needs in the Podfile
 def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'ephemeral', 'Flutter-Generated.xcconfig'), __FILE__)
   unless File.exist?(generated_xcode_build_settings_path)
@@ -23,32 +22,15 @@ def flutter_root
   raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Flutter-Generated.xcconfig, then run flutter pub get"
 end
 
-# Ensure you have the Flutter framework in your project
-generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'ephemeral', 'Flutter-Generated.xcconfig'), __FILE__)
-if File.exist?(generated_xcode_build_settings_path)
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/\s*FLUTTER_FRAMEWORK_DIR\s*=\s*(.*)/)
-    @flutter_framework_dir = matches[1].strip if matches
-  end
-end
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_macos_podfile_setup
 
 target 'Runner' do
   use_frameworks!
   use_modular_headers!
 
-  # Install pods for all Flutter plugins
-  # On macOS, the plugins are sub-projects of the Runner project
-  pod_install_path = File.join('..', 'Flutter', 'ephemeral', '.symlinks', 'plugins')
-  if File.exist?(pod_install_path)
-    Dir.foreach(pod_install_path) do |plugin_name|
-      next if plugin_name == '.' or plugin_name == '..'
-      plugin_podspec = File.join(pod_install_path, plugin_name, 'macos', "#{plugin_name}.podspec")
-      if File.exist?(plugin_podspec)
-        pod plugin_name, :path => File.join(pod_install_path, plugin_name, 'macos')
-      end
-    end
-  end
-
+  flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
   end
@@ -56,6 +38,7 @@ end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
+    flutter_additional_macos_build_settings(target)
     target.build_configurations.each do |config|
       config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '11.0'
     end
