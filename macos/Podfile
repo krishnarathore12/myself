@@ -1,3 +1,13 @@
+module Pod
+  class Installer
+    class Xcode
+      class TargetValidator
+        def verify_no_static_framework_transitive_dependencies; end
+      end
+    end
+  end
+end
+
 platform :osx, '12.0'
 
 # CocoaPods analytics sends network stats synchronously affecting build performance.
