@@ -41,12 +41,26 @@ jobs:
           channel: 'stable'
       - run: flutter build linux --release
       - run: |
-          cd build/linux/x64/release/bundle/
-          tar -czf ../../../../../myself-linux.tar.gz .
+          mkdir -p deb/usr/share/myself deb/usr/share/applications deb/usr/bin deb/DEBIAN
+          cp -r build/linux/x64/release/bundle/* deb/usr/share/myself/
+          ln -s /usr/share/myself/myself deb/usr/bin/myself
+          echo "Package: myself" > deb/DEBIAN/control
+          echo "Version: 1.0.0" >> deb/DEBIAN/control
+          echo "Section: utils" >> deb/DEBIAN/control
+          echo "Priority: optional" >> deb/DEBIAN/control
+          echo "Architecture: amd64" >> deb/DEBIAN/control
+          echo "Maintainer: author" >> deb/DEBIAN/control
+          echo "Description: myself chat app" >> deb/DEBIAN/control
+          echo "[Desktop Entry]" > deb/usr/share/applications/myself.desktop
+          echo "Name=myself" >> deb/usr/share/applications/myself.desktop
+          echo "Exec=/usr/bin/myself" >> deb/usr/share/applications/myself.desktop
+          echo "Type=Application" >> deb/usr/share/applications/myself.desktop
+          echo "Categories=Network;" >> deb/usr/share/applications/myself.desktop
+          dpkg-deb --build deb myself-linux-amd64.deb
       - uses: actions/upload-artifact@v4
         with:
           name: linux-release
-          path: myself-linux.tar.gz
+          path: myself-linux-amd64.deb
 
   # 3. Build Windows
   build_windows:
@@ -58,12 +72,11 @@ jobs:
           channel: 'stable'
       - run: flutter config --enable-windows-desktop
       - run: flutter build windows --release
-      - run: |
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath myself-windows.zip
+      - run: iscc installer.iss
       - uses: actions/upload-artifact@v4
         with:
           name: windows-release
-          path: myself-windows.zip
+          path: Output/myself-setup.exe
 
 
 
@@ -86,8 +99,8 @@ jobs:
         with:
           files: |
             artifacts/app-release.apk
-            artifacts/myself-linux.tar.gz
-            artifacts/myself-windows.zip
+            artifacts/myself-linux-amd64.deb
+            artifacts/myself-setup.exe
           draft: false
           prerelease: false
           generate_release_notes: true
