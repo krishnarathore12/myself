@@ -5,12 +5,13 @@ class NetworkDiscoveryService {
   BonsoirBroadcast? _broadcast;
   BonsoirDiscovery? _discovery;
 
-  Future<void> registerDevice(String deviceName, int port) async {
+  Future<void> registerDevice(String deviceName, int port, String myEmoji) async {
     // 1. Define the service
     BonsoirService service = BonsoirService(
       name: deviceName,
       type: serviceType,
       port: port,
+      attributes: {'emoji': myEmoji},
     );
 
     // 2. Broadcast it to the network
@@ -30,18 +31,14 @@ class NetworkDiscoveryService {
 
     _discovery!.eventStream!.listen((event) {
       if (event is BonsoirDiscoveryServiceFoundEvent) {
-        event.service?.resolve(_discovery!.serviceResolver);
+        event.service.resolve(_discovery!.serviceResolver);
         
       } else if (event is BonsoirDiscoveryServiceResolvedEvent) {
-        if (event.service != null) {
-          onDeviceFound(event.service!);
-        }
-      } else if (event is BonsoirDiscoveryServiceLostEvent) {
+        onDeviceFound(event.service);
+            } else if (event is BonsoirDiscoveryServiceLostEvent) {
         // NEW: When a device drops off the Wi-Fi or closes the app
-        if (event.service != null) {
-          onDeviceLost(event.service!);
-        }
-      }
+        onDeviceLost(event.service);
+            }
     });
 
     await _discovery!.start();

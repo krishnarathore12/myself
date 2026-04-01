@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'services/database_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-void main() {
-  runApp(const localChatApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize the database and assign it to our global variable
+  objectBox = await ObjectBoxService.create();
+
+  runApp(const MyselfApp());
 }
 
-class localChatApp extends StatelessWidget {
-  const localChatApp({super.key});
+class MyselfApp extends StatelessWidget {
+  const MyselfApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'myself',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-        useMaterial3: true,
+        useMaterial3: true, // For the Serif logo look
+        textTheme: GoogleFonts.geistTextTheme(),
+        colorSchemeSeed: Colors.green,
       ),
+
       home: const HomeScreen(),
     );
   }
